@@ -23,26 +23,34 @@
         <% if (list.length === 0) { %>
           <div class="card text-sm text-slate-400 py-4 text-center border border-dashed border-slate-200">尚未新增</div>
         <% } else { %>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <% list.forEach(function(a, idx){ %>
               <a href="<%= BASE_PATH %>/accounts/<%= a.id %>" data-reveal class="block group">
-                <div class="payment-card bg-gradient-to-br from-slate-700 to-slate-900">
+                <div class="payment-card <%= a.image_path ? '' : 'payment-card-ghost' %>">
                   <% if (a.image_path) { %>
-                    <img src="<%= BASE_PATH %><%= a.image_path %>" alt="<%= a.card_or_account_name %>" class="object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
+                    <img src="<%= BASE_PATH %><%= a.image_path %>"
+                         alt="<%= a.card_or_account_name %>"
+                         class="transition-transform duration-500 group-hover:scale-[1.04]" />
                   <% } else { %>
-                    <div class="absolute inset-0 bg-gradient-to-br <%= meta.accent.replace('bg-', 'from-') %> to-slate-900"></div>
+                    <span class="watermark"><%= meta.emoji %></span>
+                    <div class="absolute inset-0 p-4 flex flex-col justify-between text-white z-[3]">
+                      <div class="flex items-center justify-between">
+                        <span class="text-[11px] uppercase tracking-widest opacity-80"><%= meta.label %></span>
+                        <span class="text-[11px] opacity-90"><%= a.bank_or_provider_name %></span>
+                      </div>
+                      <div>
+                        <p class="font-semibold"><%= a.card_or_account_name %></p>
+                        <p class="text-xs opacity-80 tracking-[0.3em] mt-1">•••• <%= a.last_four_digits || '----' %></p>
+                      </div>
+                    </div>
                   <% } %>
-                  <div class="overlay"></div>
-                  <div class="absolute inset-0 p-4 flex flex-col justify-between text-white">
-                    <div class="flex items-center justify-between">
-                      <span class="text-[11px] uppercase tracking-widest opacity-80"><%= meta.label %></span>
-                      <span class="text-[11px] opacity-90"><%= a.bank_or_provider_name %></span>
-                    </div>
-                    <div>
-                      <p class="font-semibold drop-shadow-sm"><%= a.card_or_account_name %></p>
-                      <p class="text-xs opacity-80 tracking-[0.3em] mt-1">•••• <%= a.last_four_digits || '----' %></p>
-                    </div>
+                </div>
+                <div class="mt-3 px-1 flex items-center justify-between gap-3">
+                  <div class="min-w-0">
+                    <p class="font-semibold truncate"><%= a.card_or_account_name %></p>
+                    <p class="text-xs text-slate-500 truncate"><%= a.bank_or_provider_name %> · •••• <%= a.last_four_digits || '----' %></p>
                   </div>
+                  <span class="chip-slate shrink-0"><%= meta.label %></span>
                 </div>
               </a>
             <% }) %>

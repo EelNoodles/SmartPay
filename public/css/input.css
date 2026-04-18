@@ -74,17 +74,52 @@
   .chip-slate   { @apply chip bg-slate-100 text-slate-600; }
   .chip-brand   { @apply chip bg-brand-100 text-brand-700; }
 
+  /* --- Payment card : luxe edge-to-edge face with colored glow --- */
   .payment-card {
-    @apply relative overflow-hidden rounded-3xl aspect-video shadow-card transition-transform duration-300;
+    @apply relative overflow-hidden rounded-3xl aspect-video transition-all duration-300;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.25),
+      0 0 0 1px rgba(148, 176, 255, 0.18),
+      0 0 28px  rgba(94, 132, 255, 0.30),
+      0 0 70px  rgba(59,  99, 245, 0.18);
   }
   .payment-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.40),
+      0 0 0 1px rgba(148, 176, 255, 0.30),
+      0 0 44px  rgba(94, 132, 255, 0.50),
+      0 0 110px rgba(59,  99, 245, 0.35);
+  }
+  /* Soft top-to-bottom gloss for premium feel */
+  .payment-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg,
+        rgba(255, 255, 255, 0.20) 0%,
+        rgba(255, 255, 255, 0.00) 30%,
+        rgba(255, 255, 255, 0.00) 72%,
+        rgba(255, 255, 255, 0.12) 100%);
+    pointer-events: none;
+    z-index: 2;
+    mix-blend-mode: overlay;
   }
   .payment-card img {
-    @apply absolute inset-0 w-full h-full object-cover;
+    @apply absolute inset-0 w-full h-full object-cover z-0;
   }
-  .payment-card .overlay {
-    @apply absolute inset-0 bg-gradient-to-br from-black/30 via-black/10 to-transparent;
+  /* No-image fallback — still luxe, never dirty */
+  .payment-card-ghost {
+    background:
+      radial-gradient(120% 120% at 20% 0%, rgba(255,255,255,0.18), transparent 55%),
+      linear-gradient(135deg, #3b63f5 0%, #1f38a8 55%, #111d5c 100%);
+  }
+  .payment-card-ghost .watermark {
+    @apply absolute inset-0 flex items-center justify-center text-white/10 font-black select-none;
+    font-size: 10rem;
+    letter-spacing: -0.08em;
+    z-index: 1;
   }
 
   .nav-item {
