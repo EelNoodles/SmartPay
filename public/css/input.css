@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    @apply bg-surface text-slate-800 font-sans antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+  h1, h2, h3, h4 {
+    @apply font-display tracking-tight text-slate-900;
+  }
+  input, select, textarea {
+    @apply focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400;
+  }
+}
+
+@layer components {
+  .container-app {
+    @apply mx-auto max-w-xl px-4 sm:max-w-2xl md:max-w-4xl lg:max-w-5xl;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl font-semibold text-sm transition-all duration-200 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed;
+    min-height: 44px;
+  }
+  .btn-primary {
+    @apply btn bg-brand-600 text-white shadow-card hover:bg-brand-700;
+  }
+  .btn-ghost {
+    @apply btn bg-white/70 text-slate-700 border border-slate-200 hover:bg-white;
+  }
+  .btn-danger {
+    @apply btn bg-rose-500 text-white hover:bg-rose-600;
+  }
+
+  .field {
+    @apply w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-slate-900 placeholder-slate-400 shadow-sm;
+    min-height: 44px;
+  }
+  .label {
+    @apply block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5;
+  }
+
+  .card {
+    @apply bg-white rounded-3xl shadow-card p-5;
+  }
+  .card-glass {
+    @apply rounded-3xl border border-white/40 bg-white/60 backdrop-blur-xl shadow-glass p-5;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold;
+  }
+  .chip-amber { @apply chip bg-amber-100 text-amber-700; }
+  .chip-rose  { @apply chip bg-rose-100 text-rose-700; }
+  .chip-emerald { @apply chip bg-emerald-100 text-emerald-700; }
+  .chip-slate { @apply chip bg-slate-100 text-slate-600; }
+  .chip-brand { @apply chip bg-brand-100 text-brand-700; }
+
+  .payment-card {
+    @apply relative overflow-hidden rounded-3xl aspect-video shadow-card;
+  }
+  .payment-card img {
+    @apply absolute inset-0 w-full h-full object-cover;
+  }
+  .payment-card .overlay {
+    @apply absolute inset-0 bg-gradient-to-br from-black/30 via-black/10 to-transparent;
+  }
+
+  .nav-item {
+    @apply flex flex-col items-center justify-center gap-0.5 flex-1 py-2 text-[11px] font-medium text-slate-500;
+    min-height: 56px;
+  }
+  .nav-item.active {
+    @apply text-brand-600;
+  }
+  .nav-icon {
+    @apply w-6 h-6;
+  }
+
+  .rank-badge {
+    @apply inline-flex items-center justify-center w-10 h-10 rounded-2xl font-bold text-white shadow-card;
+  }
+  .rank-1 { @apply rank-badge bg-gradient-to-br from-amber-400 to-amber-600; }
+  .rank-2 { @apply rank-badge bg-gradient-to-br from-slate-300 to-slate-500; }
+  .rank-3 { @apply rank-badge bg-gradient-to-br from-orange-300 to-orange-500; }
+}
+
+/* Prevent iOS safe-area overlap for bottom nav */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}

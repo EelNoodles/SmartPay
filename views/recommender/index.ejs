@@ -1,0 +1,91 @@
+<%- include('../partials/head') %>
+<body class="min-h-screen">
+  <%- include('../partials/topbar') %>
+  <%- include('../partials/flash') %>
+
+  <main class="container-app py-5 space-y-6">
+    <!-- Input card -->
+    <section class="card-glass bg-gradient-to-br from-brand-600 to-brand-800 text-white !p-6">
+      <p class="text-[11px] uppercase tracking-widest opacity-80">AI Recommender</p>
+      <h1 class="text-2xl sm:text-3xl font-bold mt-1 text-white">最佳支付試算</h1>
+      <form action="<%= BASE_PATH %>/recommender" method="POST" class="mt-5 space-y-3">
+        <div>
+          <label class="label text-white/80" for="scenario">消費情境 / 店家</label>
+          <input id="scenario" name="scenario" required class="field !bg-white/95 text-slate-900"
+                 value="<%= query.scenario %>" placeholder="例：全聯 買菜、星巴克、蝦皮購物" />
+        </div>
+        <div>
+          <label class="label text-white/80" for="amount">預計消費金額 (NT$)</label>
+          <input id="amount" name="amount" type="number" min="1" required inputmode="numeric" class="field !bg-white/95 text-slate-900"
+                 value="<%= query.amount %>" placeholder="1500" />
+        </div>
+        <button class="btn w-full bg-white text-brand-700 hover:bg-white/90 font-bold">試算最佳支付</button>
+      </form>
+    </section>
+
+    <% if (accounts.length === 0) { %>
+      <div class="card text-center py-6">
+        <p class="text-sm text-slate-500">你還沒有任何金融工具。</p>
+        <a href="<%= BASE_PATH %>/accounts/new" class="btn-primary mt-4 inline-flex">先新增一張卡</a>
+      </div>
+    <% } %>
+
+    <% if (result && result.error) { %>
+      <div class="card bg-rose-50 border border-rose-200 text-rose-700 text-sm"><%= result.error %></div>
+    <% } %>
+
+    <% if (result && result.recommendations && result.recommendations.length) { %>
+      <section>
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-bold text-lg">🏆 Leaderboard · 前 <%= result.recommendations.length %> 名</h2>
+          <span class="text-[11px] text-slate-500">
+            <% if (result.context && result.context.usedCache) { %>🟢 context cache<% } else { %>🔵 direct<% } %>
+          </span>
+        </div>
+        <div class="space-y-3">
+          <% result.recommendations.forEach(function(r){
+               var meta = r.account ? ACCOUNT_TYPE_META[r.account.account_type] : null; %>
+            <article class="card !p-5">
+              <div class="flex items-start gap-4">
+                <div class="rank-<%= r.rank %>"><%= r.rank %></div>
+                <div class="min-w-0 flex-1">
+                  <p class="text-xs text-slate-500"><%= meta ? meta.label : '—' %></p>
+                  <p class="font-bold text-lg truncate"><%= r.payment_label %></p>
+                  <% if (r.account) { %>
+                    <p class="text-xs text-slate-500 truncate"><%= r.account.bank_or_provider_name %> · •••• <%= r.account.last_four_digits || '----' %></p>
+                  <% } %>
+                </div>
+                <div class="text-right">
+                  <p class="text-[11px] text-slate-500">預估回饋</p>
+                  <p class="text-2xl font-black text-brand-700">
+                    $<%= Math.round(Number(r.estimated_reward) || 0) %>
+                  </p>
+                  <p class="text-[11px] text-slate-500"><%= Number(r.estimated_rate || 0).toFixed(2) %>%</p>
+                </div>
+              </div>
+
+              <% if ((r.warnings || []).length) { %>
+                <ul class="mt-4 space-y-1.5">
+                  <% r.warnings.forEach(function(w){ %>
+                    <li class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 flex items-start gap-2">
+                      <span>⚠️</span><span><%= w %></span>
+                    </li>
+                  <% }) %>
+                </ul>
+              <% } %>
+
+              <% if (r.reasoning) { %>
+                <p class="text-xs text-slate-600 mt-3 leading-relaxed border-t border-slate-100 pt-3"><%= r.reasoning %></p>
+              <% } %>
+            </article>
+          <% }) %>
+        </div>
+      </section>
+    <% } else if (result && !result.error) { %>
+      <div class="card text-center py-6 text-sm text-slate-500">
+        沒有可用推薦。請新增金融工具或活動後再試。
+      </div>
+    <% } %>
+  </main>
+
+  <%- include('../partials/foot') %>

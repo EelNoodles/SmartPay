@@ -1,0 +1,52 @@
+<%- include('../partials/head') %>
+<body class="min-h-screen">
+  <%- include('../partials/topbar') %>
+  <%- include('../partials/flash') %>
+
+  <main class="container-app py-5 space-y-6">
+    <div class="flex items-center justify-between">
+      <h1 class="text-2xl font-bold">金融工具</h1>
+      <a href="<%= BASE_PATH %>/accounts/new" class="btn-primary !py-2 !px-4 text-xs">+ 新增</a>
+    </div>
+
+    <% Object.keys(grouped).forEach(function(typeId){
+         var meta = ACCOUNT_TYPE_META[typeId];
+         var list = grouped[typeId] || []; if (!meta) return; %>
+      <section>
+        <h2 class="text-sm font-semibold text-slate-600 mb-2 flex items-center gap-2">
+          <span class="w-6 h-6 rounded-lg flex items-center justify-center <%= meta.accent %> text-white text-xs"><%= meta.emoji %></span>
+          <%= meta.label %> <span class="text-slate-400 font-normal">(<%= list.length %>)</span>
+        </h2>
+        <% if (list.length === 0) { %>
+          <div class="card text-sm text-slate-400 py-4 text-center">尚未新增</div>
+        <% } else { %>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <% list.forEach(function(a){ %>
+              <a href="<%= BASE_PATH %>/accounts/<%= a.id %>" class="block group">
+                <div class="payment-card bg-gradient-to-br from-slate-700 to-slate-900">
+                  <% if (a.image_path) { %>
+                    <img src="<%= BASE_PATH %><%= a.image_path %>" alt="<%= a.card_or_account_name %>" class="object-cover" />
+                  <% } else { %>
+                    <div class="absolute inset-0 bg-gradient-to-br <%= meta.accent.replace('bg-', 'from-') %> to-slate-900"></div>
+                  <% } %>
+                  <div class="overlay"></div>
+                  <div class="absolute inset-0 p-4 flex flex-col justify-between text-white">
+                    <div class="flex items-center justify-between">
+                      <span class="text-[11px] uppercase tracking-widest opacity-80"><%= meta.label %></span>
+                      <span class="text-[11px] opacity-90"><%= a.bank_or_provider_name %></span>
+                    </div>
+                    <div>
+                      <p class="font-semibold drop-shadow-sm"><%= a.card_or_account_name %></p>
+                      <p class="text-xs opacity-80 tracking-[0.3em] mt-1">•••• <%= a.last_four_digits || '----' %></p>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            <% }) %>
+          </div>
+        <% } %>
+      </section>
+    <% }) %>
+  </main>
+
+  <%- include('../partials/foot') %>

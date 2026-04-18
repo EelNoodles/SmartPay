@@ -1,0 +1,13 @@
+<% if (flash && (flash.success.length || flash.error.length || flash.info.length)) { %>
+  <div class="container-app pt-3 space-y-2">
+    <% flash.success.forEach(function(m){ %>
+      <div class="card-glass !p-3 border-emerald-200 bg-emerald-50/70 text-emerald-800 text-sm"><%= m %></div>
+    <% }) %>
+    <% flash.error.forEach(function(m){ %>
+      <div class="card-glass !p-3 border-rose-200 bg-rose-50/70 text-rose-800 text-sm"><%= m %></div>
+    <% }) %>
+    <% flash.info.forEach(function(m){ %>
+      <div class="card-glass !p-3 border-brand-200 bg-brand-50/70 text-brand-800 text-sm"><%= m %></div>
+    <% }) %>
+  </div>
+<% } %>

@@ -1,0 +1,73 @@
+<%- include('partials/head') %>
+<body class="min-h-screen">
+  <%- include('partials/topbar') %>
+  <%- include('partials/flash') %>
+
+  <main class="container-app py-5 space-y-6">
+    <!-- Hero / AI prompt -->
+    <section class="card-glass bg-gradient-to-br from-brand-600 to-brand-800 text-white !p-6">
+      <p class="text-[11px] uppercase tracking-widest opacity-80">AI Recommender</p>
+      <h1 class="text-2xl sm:text-3xl font-bold mt-1 text-white">告訴我你要花多少，我幫你刷到最佳回饋</h1>
+      <p class="text-sm mt-2 text-white/80">結合你的金融工具與活動，10 秒內試算前三名最賺組合。</p>
+
+      <form action="<%= BASE_PATH %>/recommender" method="POST" class="mt-5 space-y-3">
+        <div>
+          <label class="label text-white/80" for="scenario">消費情境 / 店家</label>
+          <input id="scenario" name="scenario" required class="field !bg-white/95 text-slate-900" placeholder="例：全聯 買菜、星巴克、蝦皮購物、Uber" />
+        </div>
+        <div>
+          <label class="label text-white/80" for="amount">預計消費金額 (NT$)</label>
+          <input id="amount" name="amount" type="number" min="1" required inputmode="numeric" class="field !bg-white/95 text-slate-900" placeholder="1500" />
+        </div>
+        <button class="btn w-full bg-white text-brand-700 hover:bg-white/90 font-bold">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          立即試算最佳支付
+        </button>
+      </form>
+    </section>
+
+    <!-- Quick summary -->
+    <section class="grid grid-cols-2 gap-3">
+      <% Object.keys(countsByType).forEach(function(k){
+           var meta = ACCOUNT_TYPE_META[k]; if (!meta) return; %>
+        <div class="card flex items-center justify-between !p-4">
+          <div>
+            <p class="text-xs text-slate-500"><%= meta.label %></p>
+            <p class="text-2xl font-bold mt-0.5"><%= countsByType[k] %></p>
+          </div>
+          <span class="w-10 h-10 rounded-2xl flex items-center justify-center <%= meta.accent %> text-white text-lg"><%= meta.emoji %></span>
+        </div>
+      <% }) %>
+    </section>
+
+    <!-- Recent campaigns -->
+    <section>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-bold text-lg">最近登錄的活動</h2>
+        <a href="<%= BASE_PATH %>/campaigns" class="text-xs font-semibold text-brand-600">查看全部 →</a>
+      </div>
+      <% if (campaigns.length === 0) { %>
+        <div class="card text-center text-sm text-slate-500 py-6">
+          還沒有活動。<a href="<%= BASE_PATH %>/campaigns/new" class="text-brand-600 font-semibold">用 AI 貼上活動規則一鍵登錄</a>
+        </div>
+      <% } else { %>
+        <div class="space-y-2.5">
+          <% campaigns.slice(0, 4).forEach(function(c){ %>
+            <div class="card !p-4 flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <p class="font-semibold truncate"><%= c.campaign_name %></p>
+                <p class="text-xs text-slate-500 mt-0.5 truncate"><%= c.card_or_account_name %> · <%= c.bank_or_provider_name %></p>
+                <div class="flex flex-wrap gap-1.5 mt-2">
+                  <span class="chip-brand"><%= Number(c.reward_rate).toFixed(2) %>%</span>
+                  <% if (c.end_date) { %><span class="chip-slate">至 <%= c.end_date %></span><% } %>
+                  <% if (c.requires_registration) { %><span class="chip-amber">需登錄</span><% } %>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+  </main>
+
+  <%- include('partials/foot') %>
