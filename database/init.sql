@@ -21,9 +21,8 @@ CREATE TABLE `users` (
   UNIQUE KEY `uk_users_username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Default account is seeded on server boot (see src/utils/seed.js).
--- Credentials: demo / demo1234
--- A real bcrypt hash is generated at runtime to avoid shipping a fake hash here.
+-- No default user is seeded. Sign up via /auth/register using the PIN
+-- configured in REGISTER_PIN (env). Passwords are stored as bcrypt hashes.
 
 -- ============================================================
 -- financial_accounts

@@ -13,15 +13,20 @@
       <form action="<%= BASE_PATH %>/auth/login" method="POST" class="card space-y-4">
         <div>
           <label class="label" for="username">帳號</label>
-          <input id="username" name="username" type="text" required autocomplete="username" class="field" placeholder="demo" />
+          <input id="username" name="username" type="text" required autocomplete="username"
+                 value="<%= form.username %>" class="field" placeholder="your_username" />
         </div>
         <div>
           <label class="label" for="password">密碼</label>
           <input id="password" name="password" type="password" required autocomplete="current-password" class="field" placeholder="••••••••" />
         </div>
         <button type="submit" class="btn-primary w-full">登入</button>
-        <p class="text-[11px] text-center text-slate-400 pt-1">預設帳號 <span class="font-semibold text-slate-600">demo</span> / <span class="font-semibold text-slate-600">demo1234</span></p>
       </form>
+
+      <p class="text-center text-sm text-slate-500 mt-6">
+        還沒有帳號？
+        <a href="<%= BASE_PATH %>/auth/register" class="font-semibold text-brand-600 hover:text-brand-700">立即註冊</a>
+      </p>
     </div>
   </main>
 </body>
