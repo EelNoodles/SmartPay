@@ -16,4 +16,12 @@ async function findById(id) {
   return rows[0] || null;
 }
 
-module.exports = { findByUsername, findById };
+async function create({ username, passwordHash, displayName }) {
+  const [res] = await pool.query(
+    'INSERT INTO users (username, password_hash, display_name) VALUES (?, ?, ?)',
+    [username, passwordHash, displayName || null]
+  );
+  return res.insertId;
+}
+
+module.exports = { findByUsername, findById, create };

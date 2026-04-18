@@ -1,0 +1,57 @@
+<%- include('../partials/head') %>
+<body class="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-100">
+  <main class="min-h-screen flex items-center justify-center px-5 py-10">
+    <div class="w-full max-w-sm">
+      <div class="flex flex-col items-center mb-8">
+        <div class="w-14 h-14 rounded-3xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white font-black text-2xl shadow-card">S</div>
+        <h1 class="mt-4 text-2xl font-bold">建立 SmartPay 帳號</h1>
+        <p class="text-sm text-slate-500 mt-1">需要邀請 PIN 碼才能註冊</p>
+      </div>
+
+      <%- include('../partials/flash') %>
+
+      <form action="<%= BASE_PATH %>/auth/register" method="POST" class="card space-y-4">
+        <div>
+          <label class="label" for="username">帳號</label>
+          <input id="username" name="username" type="text" required autocomplete="username"
+                 minlength="3" maxlength="32" pattern="[A-Za-z0-9_.\-]{3,32}"
+                 value="<%= form.username %>" class="field" placeholder="3~32 字，限英數 . _ -" />
+        </div>
+
+        <div>
+          <label class="label" for="display_name">顯示名稱 (選填)</label>
+          <input id="display_name" name="display_name" type="text" maxlength="64"
+                 value="<%= form.display_name %>" class="field" placeholder="顯示在介面右上角" />
+        </div>
+
+        <div>
+          <label class="label" for="password">密碼</label>
+          <input id="password" name="password" type="password" required autocomplete="new-password"
+                 minlength="8" class="field" placeholder="至少 8 碼" />
+        </div>
+
+        <div>
+          <label class="label" for="password_confirm">再次輸入密碼</label>
+          <input id="password_confirm" name="password_confirm" type="password" required
+                 autocomplete="new-password" minlength="8" class="field" placeholder="再次輸入相同密碼" />
+        </div>
+
+        <div>
+          <label class="label" for="pin">邀請 PIN 碼</label>
+          <input id="pin" name="pin" type="password" required inputmode="numeric"
+                 autocomplete="one-time-code" class="field tracking-[0.5em] text-center"
+                 placeholder="• • • • • •" />
+          <p class="text-[11px] text-slate-400 mt-1.5">未持有 PIN 碼者無法註冊。</p>
+        </div>
+
+        <button type="submit" class="btn-primary w-full">註冊並登入</button>
+      </form>
+
+      <p class="text-center text-sm text-slate-500 mt-6">
+        已經有帳號？
+        <a href="<%= BASE_PATH %>/auth/login" class="font-semibold text-brand-600 hover:text-brand-700">前往登入</a>
+      </p>
+    </div>
+  </main>
+</body>
+</html>
