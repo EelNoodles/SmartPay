@@ -74,6 +74,8 @@ CREATE TABLE `reward_campaigns` (
   `target_merchants`      JSON          DEFAULT NULL,
   `requires_registration` TINYINT(1)   NOT NULL DEFAULT 0,
   `is_quota_limited`      TINYINT(1)   NOT NULL DEFAULT 0,
+  `requires_plan_switch`  TINYINT(1)   NOT NULL DEFAULT 0,
+  `required_plan_name`    VARCHAR(255) DEFAULT NULL,
   `created_at`            DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_rc_account` (`financial_account_id`),

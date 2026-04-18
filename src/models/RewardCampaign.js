@@ -6,6 +6,7 @@ const SELECT_COLS = `
   rc.start_date, rc.end_date, rc.reward_rate, rc.reward_cap_amount,
   rc.reward_cap_period, rc.min_spend_amount, rc.applicable_days,
   rc.target_merchants, rc.requires_registration, rc.is_quota_limited,
+  rc.requires_plan_switch, rc.required_plan_name,
   rc.created_at
 `;
 
@@ -16,7 +17,8 @@ function normalizeRow(row) {
     applicable_days:  safeParseJSON(row.applicable_days, []),
     target_merchants: safeParseJSON(row.target_merchants, []),
     requires_registration: !!row.requires_registration,
-    is_quota_limited: !!row.is_quota_limited
+    is_quota_limited:      !!row.is_quota_limited,
+    requires_plan_switch:  !!row.requires_plan_switch
   };
 }
 
@@ -62,8 +64,9 @@ async function create(data) {
     `INSERT INTO reward_campaigns
        (financial_account_id, campaign_name, description, start_date, end_date,
         reward_rate, reward_cap_amount, reward_cap_period, min_spend_amount,
-        applicable_days, target_merchants, requires_registration, is_quota_limited)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        applicable_days, target_merchants, requires_registration, is_quota_limited,
+        requires_plan_switch, required_plan_name)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       data.financial_account_id,
       data.campaign_name,
@@ -77,7 +80,9 @@ async function create(data) {
       JSON.stringify(data.applicable_days || []),
       JSON.stringify(data.target_merchants || []),
       data.requires_registration ? 1 : 0,
-      data.is_quota_limited ? 1 : 0
+      data.is_quota_limited ? 1 : 0,
+      data.requires_plan_switch ? 1 : 0,
+      data.required_plan_name || null
     ]
   );
   return res.insertId;
@@ -103,7 +108,8 @@ async function listActiveForPrompt(userId, today) {
     `SELECT rc.id, rc.financial_account_id, rc.campaign_name,
             rc.start_date, rc.end_date, rc.reward_rate, rc.reward_cap_amount,
             rc.reward_cap_period, rc.min_spend_amount, rc.applicable_days,
-            rc.target_merchants, rc.requires_registration, rc.is_quota_limited
+            rc.target_merchants, rc.requires_registration, rc.is_quota_limited,
+            rc.requires_plan_switch, rc.required_plan_name
        FROM reward_campaigns rc
        JOIN financial_accounts fa ON fa.id = rc.financial_account_id
       WHERE fa.user_id = ?

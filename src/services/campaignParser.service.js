@@ -20,8 +20,11 @@ const SYSTEM_INSTRUCTION = [
   '- 回饋率以百分比「數字」表示（例：5 代表 5%）。',
   '- reward_cap_period 必須使用指定代碼：NONE / PER_TRANSACTION / MONTHLY / CAMPAIGN_TOTAL。',
   '- applicable_days 使用 ISO 星期編號 1~7（1=週一、7=週日）。若全週皆可則為空陣列 []。',
-  '- 若某欄位無法從文字判讀，請填 null（數值、日期）或空陣列（清單）。',
+  '- 若某欄位無法從文字判讀，請填 null（數值、日期、文字）或空陣列（清單）。',
   '- target_merchants 僅列指定通路/店家名稱，不要放一般描述。',
+  '- 若規則要求使用者必須先切換/選擇某方案、權益、回饋類型或綁定某項服務才享此回饋，',
+  '  則 requires_plan_switch=true，並把需切換的「方案或權益名稱」填入 required_plan_name',
+  '  （例：「現金回饋方案」、「樂天旅遊回饋」、「綁定 LINE Pay」）。否則 false + null。',
   '- 日期格式 YYYY-MM-DD。'
 ].join('\n');
 
@@ -38,7 +41,9 @@ const responseSchema = {
     applicable_days:       { type: 'array', items: { type: 'integer', minimum: 1, maximum: 7 } },
     target_merchants:      { type: 'array', items: { type: 'string' } },
     requires_registration: { type: 'boolean' },
-    is_quota_limited:      { type: 'boolean' }
+    is_quota_limited:      { type: 'boolean' },
+    requires_plan_switch:  { type: 'boolean' },
+    required_plan_name:    { type: 'string', nullable: true }
   },
   required: [
     'campaign_name',
@@ -47,7 +52,8 @@ const responseSchema = {
     'applicable_days',
     'target_merchants',
     'requires_registration',
-    'is_quota_limited'
+    'is_quota_limited',
+    'requires_plan_switch'
   ]
 };
 
@@ -84,6 +90,11 @@ async function parseCampaignRules(rawText) {
     throw new Error('AI 回傳格式不是有效 JSON，請再試一次。');
   }
 
+  const requiresPlanSwitch = !!parsed.requires_plan_switch;
+  const rawPlanName = typeof parsed.required_plan_name === 'string'
+    ? parsed.required_plan_name.trim()
+    : '';
+
   return {
     campaign_name:         parsed.campaign_name || '未命名活動',
     start_date:            parsed.start_date || null,
@@ -95,7 +106,9 @@ async function parseCampaignRules(rawText) {
     applicable_days:       Array.isArray(parsed.applicable_days) ? parsed.applicable_days : [],
     target_merchants:      Array.isArray(parsed.target_merchants) ? parsed.target_merchants : [],
     requires_registration: !!parsed.requires_registration,
-    is_quota_limited:      !!parsed.is_quota_limited
+    is_quota_limited:      !!parsed.is_quota_limited,
+    requires_plan_switch:  requiresPlanSwitch,
+    required_plan_name:    requiresPlanSwitch && rawPlanName ? rawPlanName : null
   };
 }
 

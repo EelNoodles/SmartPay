@@ -41,6 +41,8 @@ const RECOMMENDER_SYSTEM = [
   '  不計入回饋，並在 warnings 中提示「此活動僅限指定通路」。',
   '- requires_registration = true 時，必須在 warnings 中提示「需事前登錄活動」。',
   '- is_quota_limited = true 時，警告「活動有名額限制，請儘早使用」。',
+  '- requires_plan_switch = true 時，必須在 warnings 中提示「需先切換方案/權益至 <required_plan_name>」',
+  '  （若 required_plan_name 為 null，則提示「需先切換至指定方案/權益」）；此為支付注意事項。',
   '',
   '輸出格式：',
   '- 僅輸出 JSON，完全符合提供的 schema，不要任何多餘文字。',
@@ -130,7 +132,9 @@ function compactCampaign(c) {
     days:       c.applicable_days || [],
     merchants:  c.target_merchants || [],
     needs_reg:  !!c.requires_registration,
-    quota:      !!c.is_quota_limited
+    quota:      !!c.is_quota_limited,
+    plan_switch: !!c.requires_plan_switch,
+    plan_name:   c.required_plan_name || null
   };
 }
 

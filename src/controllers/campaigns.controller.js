@@ -77,6 +77,10 @@ exports.create = async (req, res, next) => {
       .map((s) => s.trim())
       .filter(Boolean);
 
+    const requiresPlanSwitch =
+      req.body.requires_plan_switch === 'on' || req.body.requires_plan_switch === 'true';
+    const requiredPlanNameRaw = String(req.body.required_plan_name || '').trim();
+
     await RewardCampaign.create({
       financial_account_id: accountId,
       campaign_name: String(req.body.campaign_name || '').trim() || '未命名活動',
@@ -90,7 +94,9 @@ exports.create = async (req, res, next) => {
       applicable_days,
       target_merchants,
       requires_registration: req.body.requires_registration === 'on' || req.body.requires_registration === 'true',
-      is_quota_limited:      req.body.is_quota_limited      === 'on' || req.body.is_quota_limited      === 'true'
+      is_quota_limited:      req.body.is_quota_limited      === 'on' || req.body.is_quota_limited      === 'true',
+      requires_plan_switch:  requiresPlanSwitch,
+      required_plan_name:    requiresPlanSwitch ? (requiredPlanNameRaw.slice(0, 255) || null) : null
     });
     req.flash('success', '已新增回饋活動');
     res.redirect(`${BASE_PATH}/campaigns`);
