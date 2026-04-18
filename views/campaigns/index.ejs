@@ -49,6 +49,9 @@
               <% }) %>
               <% if (c.requires_registration) { %><span class="chip-amber">需登錄</span><% } %>
               <% if (c.is_quota_limited) { %><span class="chip-rose">有名額限制</span><% } %>
+              <% if (c.requires_plan_switch) { %>
+                <span class="chip-amber">🔄 切換方案<%= c.required_plan_name ? '：' + c.required_plan_name : '' %></span>
+              <% } %>
             </div>
             <div class="mt-3 flex justify-end">
               <form action="<%= BASE_PATH %>/campaigns/<%= c.id %>/delete" method="POST" onsubmit="return confirm('刪除此活動？');">

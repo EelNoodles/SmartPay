@@ -98,6 +98,7 @@
                   <span class="chip-brand"><%= Number(c.reward_rate).toFixed(2) %>%</span>
                   <% if (c.end_date) { %><span class="chip-slate">至 <%= c.end_date %></span><% } %>
                   <% if (c.requires_registration) { %><span class="chip-amber">需登錄</span><% } %>
+                  <% if (c.requires_plan_switch) { %><span class="chip-amber">🔄 切換方案</span><% } %>
                 </div>
               </div>
               <div class="w-10 h-10 rounded-2xl bg-brand-50 text-brand-700 flex items-center justify-center shrink-0">

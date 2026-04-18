@@ -98,7 +98,7 @@
         <textarea id="target_merchants" name="target_merchants" rows="2" class="field" placeholder="全家, 7-11, 蝦皮"></textarea>
       </div>
 
-      <div class="flex items-center gap-6 pt-1">
+      <div class="flex flex-wrap items-center gap-x-6 gap-y-3 pt-1">
         <label class="inline-flex items-center gap-2 text-sm">
           <input type="checkbox" id="requires_registration" name="requires_registration" class="w-4 h-4 rounded text-brand-600" />
           需事前登錄
@@ -107,6 +107,17 @@
           <input type="checkbox" id="is_quota_limited" name="is_quota_limited" class="w-4 h-4 rounded text-brand-600" />
           有名額限制
         </label>
+        <label class="inline-flex items-center gap-2 text-sm">
+          <input type="checkbox" id="requires_plan_switch" name="requires_plan_switch" class="w-4 h-4 rounded text-brand-600" />
+          切換方案 / 權益
+        </label>
+      </div>
+
+      <div id="planSwitchGroup" class="hidden rounded-2xl border border-amber-200 bg-amber-50/60 p-3">
+        <label class="label !text-amber-700" for="required_plan_name">需切換至哪個方案 / 權益</label>
+        <input id="required_plan_name" name="required_plan_name" type="text" maxlength="255"
+               class="field" placeholder="例：現金回饋方案、樂天旅遊回饋、綁定 LINE Pay" />
+        <p class="text-[11px] text-amber-700/80 mt-1.5">此項會在 AI 推薦時以「支付注意事項」提醒你先完成切換。</p>
       </div>
 
       <div>
@@ -162,6 +173,9 @@
         qs('#target_merchants').value = (p.target_merchants || []).join(', ');
         qs('#requires_registration').checked = !!p.requires_registration;
         qs('#is_quota_limited').checked      = !!p.is_quota_limited;
+        qs('#requires_plan_switch').checked  = !!p.requires_plan_switch;
+        qs('#required_plan_name').value      = p.required_plan_name || '';
+        togglePlanSwitch();
         qs('#description').value = original.slice(0, 4000);
         document.querySelectorAll('.day-chk').forEach(function(el){ el.checked = false; });
         (p.applicable_days || []).forEach(function(d){
@@ -169,6 +183,17 @@
           if (el) el.checked = true;
         });
       }
+
+      function togglePlanSwitch(){
+        var on = qs('#requires_plan_switch').checked;
+        var grp = qs('#planSwitchGroup');
+        grp.classList.toggle('hidden', !on);
+        var input = qs('#required_plan_name');
+        if (!on) input.value = '';
+        input.required = on;
+      }
+      qs('#requires_plan_switch').addEventListener('change', togglePlanSwitch);
+      togglePlanSwitch();
     })();
   </script>
 
