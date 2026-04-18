@@ -138,7 +138,7 @@ function compactCampaign(c) {
   };
 }
 
-async function buildRecommendations({ userId, scenario, amount }) {
+async function buildRecommendations({ userId, scenario, amount }, signal) {
   const today = new Date();
   const todayIso = today.toISOString().slice(0, 10);
   const weekday  = todayIsoWeekday(today);
@@ -187,7 +187,8 @@ async function buildRecommendations({ userId, scenario, amount }) {
     JSON.stringify(payload)
   ].join('\n');
 
-  const result = await model.generateContent(userTurn);
+  const generateOptions = signal ? { signal } : {};
+  const result = await model.generateContent(userTurn, generateOptions);
   const text = result.response.text();
 
   let parsed;
