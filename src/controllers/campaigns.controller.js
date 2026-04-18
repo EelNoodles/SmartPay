@@ -32,6 +32,32 @@ exports.showCreate = async (req, res, next) => {
       title: 'AI 智能登錄活動',
       activeNav: 'campaigns',
       accounts,
+      campaign: null,
+      parsed: null,
+      rawText: '',
+      REWARD_CAP_PERIOD_OPTIONS,
+      WEEKDAYS
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.showEdit = async (req, res, next) => {
+  try {
+    const userId = req.session.user.id;
+    const id = parseInt(req.params.id, 10);
+    const campaign = await RewardCampaign.findById(id, userId);
+    if (!campaign) {
+      req.flash('error', '活動不存在或已被刪除');
+      return res.redirect(`${BASE_PATH}/campaigns`);
+    }
+    const accounts = await FinancialAccount.listByUser(userId);
+    res.render('campaigns/form', {
+      title: '編輯回饋活動',
+      activeNav: 'campaigns',
+      accounts,
+      campaign,
       parsed: null,
       rawText: '',
       REWARD_CAP_PERIOD_OPTIONS,
@@ -57,48 +83,76 @@ exports.parse = async (req, res, next) => {
   }
 };
 
+function buildCampaignPayload(body, accountId) {
+  const applicable_days = Array.isArray(body.applicable_days)
+    ? body.applicable_days.map((n) => parseInt(n, 10)).filter(Boolean)
+    : [];
+  const target_merchants = String(body.target_merchants || '')
+    .split(/[\n,，]/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  const requiresPlanSwitch =
+    body.requires_plan_switch === 'on' || body.requires_plan_switch === 'true';
+  const requiredPlanNameRaw = String(body.required_plan_name || '').trim();
+
+  return {
+    financial_account_id: accountId,
+    campaign_name: String(body.campaign_name || '').trim() || '未命名活動',
+    description: String(body.description || '').slice(0, 4000),
+    start_date: body.start_date || null,
+    end_date:   body.end_date   || null,
+    reward_rate: Number(body.reward_rate || 0),
+    reward_cap_amount: body.reward_cap_amount === '' ? null : Number(body.reward_cap_amount),
+    reward_cap_period: parseInt(body.reward_cap_period, 10) || REWARD_CAP_PERIOD.NONE,
+    min_spend_amount:  body.min_spend_amount === '' ? null : Number(body.min_spend_amount),
+    applicable_days,
+    target_merchants,
+    requires_registration: body.requires_registration === 'on' || body.requires_registration === 'true',
+    is_quota_limited:      body.is_quota_limited      === 'on' || body.is_quota_limited      === 'true',
+    requires_plan_switch:  requiresPlanSwitch,
+    required_plan_name:    requiresPlanSwitch ? (requiredPlanNameRaw.slice(0, 255) || null) : null
+  };
+}
+
 exports.create = async (req, res, next) => {
   try {
     const userId = req.session.user.id;
     const accountId = parseInt(req.body.financial_account_id, 10);
 
-    // ownership check
     const account = await FinancialAccount.findById(accountId, userId);
     if (!account) {
       req.flash('error', '選擇的金融工具不存在');
       return res.redirect(`${BASE_PATH}/campaigns/new`);
     }
 
-    const applicable_days = Array.isArray(req.body.applicable_days)
-      ? req.body.applicable_days.map((n) => parseInt(n, 10)).filter(Boolean)
-      : [];
-    const target_merchants = String(req.body.target_merchants || '')
-      .split(/[\n,，]/)
-      .map((s) => s.trim())
-      .filter(Boolean);
-
-    const requiresPlanSwitch =
-      req.body.requires_plan_switch === 'on' || req.body.requires_plan_switch === 'true';
-    const requiredPlanNameRaw = String(req.body.required_plan_name || '').trim();
-
-    await RewardCampaign.create({
-      financial_account_id: accountId,
-      campaign_name: String(req.body.campaign_name || '').trim() || '未命名活動',
-      description: String(req.body.description || '').slice(0, 4000),
-      start_date: req.body.start_date || null,
-      end_date:   req.body.end_date   || null,
-      reward_rate: Number(req.body.reward_rate || 0),
-      reward_cap_amount: req.body.reward_cap_amount === '' ? null : Number(req.body.reward_cap_amount),
-      reward_cap_period: parseInt(req.body.reward_cap_period, 10) || REWARD_CAP_PERIOD.NONE,
-      min_spend_amount:  req.body.min_spend_amount === '' ? null : Number(req.body.min_spend_amount),
-      applicable_days,
-      target_merchants,
-      requires_registration: req.body.requires_registration === 'on' || req.body.requires_registration === 'true',
-      is_quota_limited:      req.body.is_quota_limited      === 'on' || req.body.is_quota_limited      === 'true',
-      requires_plan_switch:  requiresPlanSwitch,
-      required_plan_name:    requiresPlanSwitch ? (requiredPlanNameRaw.slice(0, 255) || null) : null
-    });
+    await RewardCampaign.create(buildCampaignPayload(req.body, accountId));
     req.flash('success', '已新增回饋活動');
+    res.redirect(`${BASE_PATH}/campaigns`);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.update = async (req, res, next) => {
+  try {
+    const userId = req.session.user.id;
+    const id = parseInt(req.params.id, 10);
+    const accountId = parseInt(req.body.financial_account_id, 10);
+
+    const existing = await RewardCampaign.findById(id, userId);
+    if (!existing) {
+      req.flash('error', '活動不存在或已被刪除');
+      return res.redirect(`${BASE_PATH}/campaigns`);
+    }
+    const account = await FinancialAccount.findById(accountId, userId);
+    if (!account) {
+      req.flash('error', '選擇的金融工具不存在');
+      return res.redirect(`${BASE_PATH}/campaigns/${id}/edit`);
+    }
+
+    await RewardCampaign.update(id, userId, buildCampaignPayload(req.body, accountId));
+    req.flash('success', '已更新回饋活動');
     res.redirect(`${BASE_PATH}/campaigns`);
   } catch (err) {
     next(err);
