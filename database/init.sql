@@ -13,12 +13,12 @@ USE `smartpay`;
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id`            INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `username`      VARCHAR(64)  NOT NULL,
+  `email`         VARCHAR(255) NOT NULL,
   `password_hash` VARCHAR(255) NOT NULL,
   `display_name`  VARCHAR(64)  DEFAULT NULL,
   `created_at`    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_users_username` (`username`)
+  UNIQUE KEY `uk_users_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- No default user is seeded. Sign up via /auth/register using the PIN

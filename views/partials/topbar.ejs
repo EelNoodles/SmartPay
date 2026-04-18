@@ -6,7 +6,7 @@
     </a>
     <% if (currentUser) { %>
       <div class="flex items-center gap-2">
-        <span class="hidden sm:inline text-xs text-slate-500"><%= currentUser.display_name || currentUser.username %></span>
+        <span class="hidden sm:inline text-xs text-slate-500"><%= currentUser.display_name || currentUser.email %></span>
         <form action="<%= BASE_PATH %>/auth/logout" method="POST">
           <button type="submit" class="text-xs px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold">登出</button>
         </form>
