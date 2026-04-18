@@ -5,39 +5,76 @@
 
   <main class="container-app py-5 space-y-6">
     <!-- Hero / AI prompt -->
-    <section class="card-glass bg-gradient-to-br from-brand-600 to-brand-800 text-white !p-6">
-      <p class="text-[11px] uppercase tracking-widest opacity-80">AI Recommender</p>
-      <h1 class="text-2xl sm:text-3xl font-bold mt-1 text-white">告訴我你要花多少，我幫你刷到最佳回饋</h1>
-      <p class="text-sm mt-2 text-white/80">結合你的金融工具與活動，10 秒內試算前三名最賺組合。</p>
+    <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-brand-900 text-white p-6 shadow-glow animate-fade-up">
+      <!-- Decorative blobs -->
+      <div class="hero-blob bg-sky-400/60 w-56 h-56 -top-10 -left-16 animate-blob"></div>
+      <div class="hero-blob bg-indigo-400/60 w-72 h-72 -bottom-24 -right-16 animate-blob animation-delay-300"></div>
+      <div class="hero-blob bg-fuchsia-400/40 w-40 h-40 top-12 right-6 animate-blob animation-delay-150"></div>
 
-      <form action="<%= BASE_PATH %>/recommender" method="POST" class="mt-5 space-y-3">
-        <div>
-          <label class="label text-white/80" for="scenario">消費情境 / 店家</label>
-          <input id="scenario" name="scenario" required class="field !bg-white/95 text-slate-900" placeholder="例：全聯 買菜、星巴克、蝦皮購物、Uber" />
+      <div class="relative">
+        <div class="flex items-center gap-2">
+          <span class="chip bg-white/20 text-white border border-white/25">✨ Gemini AI</span>
+          <span class="chip bg-white/10 text-white/80 border border-white/15">前三名推薦</span>
         </div>
-        <div>
-          <label class="label text-white/80" for="amount">預計消費金額 (NT$)</label>
-          <input id="amount" name="amount" type="number" min="1" required inputmode="numeric" class="field !bg-white/95 text-slate-900" placeholder="1500" />
-        </div>
-        <button class="btn w-full bg-white text-brand-700 hover:bg-white/90 font-bold">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          立即試算最佳支付
-        </button>
-      </form>
+        <h1 class="text-2xl sm:text-3xl font-extrabold mt-3 text-white text-balance">
+          告訴我要花多少錢，<br class="sm:hidden"/>我幫你刷到 <span class="underline decoration-amber-300 decoration-4 underline-offset-4">最佳回饋</span>
+        </h1>
+        <p class="text-sm mt-2 text-white/80">結合你的金融工具與當下活動，10 秒內試算最賺組合。</p>
+
+        <form action="<%= BASE_PATH %>/recommender" method="POST" class="mt-5 space-y-3" data-loading>
+          <div>
+            <label class="label text-white/80" for="scenario">消費情境 / 店家</label>
+            <input id="scenario" name="scenario" required class="field !bg-white/95 text-slate-900" placeholder="例：全聯、星巴克、蝦皮、Uber" />
+          </div>
+          <div>
+            <label class="label text-white/80" for="amount">預計消費金額 (NT$)</label>
+            <input id="amount" name="amount" type="number" min="1" required inputmode="numeric" class="field !bg-white/95 text-slate-900" placeholder="1500" />
+          </div>
+          <button class="btn w-full bg-white text-brand-700 hover:bg-white/95 font-bold">
+            <span class="spinner hidden"></span>
+            <span class="btn-text inline-flex items-center gap-2">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8L21 10h-7l-1-8z" stroke-linejoin="round"/></svg>
+              立即試算最佳支付
+            </span>
+          </button>
+        </form>
+      </div>
     </section>
 
     <!-- Quick summary -->
     <section class="grid grid-cols-2 gap-3">
-      <% Object.keys(countsByType).forEach(function(k){
-           var meta = ACCOUNT_TYPE_META[k]; if (!meta) return; %>
-        <div class="card flex items-center justify-between !p-4">
+      <% var __i = 0; Object.keys(countsByType).forEach(function(k){
+           var meta = ACCOUNT_TYPE_META[k]; if (!meta) return; __i++; %>
+        <div class="stat-tile animate-fade-up" style="animation-delay: <%= __i * 70 %>ms">
           <div>
             <p class="text-xs text-slate-500"><%= meta.label %></p>
-            <p class="text-2xl font-bold mt-0.5"><%= countsByType[k] %></p>
+            <p class="text-2xl font-extrabold mt-0.5" data-countup="<%= countsByType[k] %>">0</p>
           </div>
-          <span class="w-10 h-10 rounded-2xl flex items-center justify-center <%= meta.accent %> text-white text-lg"><%= meta.emoji %></span>
+          <span class="w-10 h-10 rounded-2xl flex items-center justify-center <%= meta.accent %> text-white text-lg shadow-card"><%= meta.emoji %></span>
         </div>
       <% }) %>
+    </section>
+
+    <!-- Quick actions -->
+    <section class="grid grid-cols-3 gap-3">
+      <a href="<%= BASE_PATH %>/accounts/new" data-reveal class="card !p-4 flex flex-col items-center gap-1.5 text-center hover:-translate-y-0.5">
+        <span class="w-10 h-10 rounded-2xl bg-brand-50 text-brand-700 flex items-center justify-center">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
+        </span>
+        <span class="text-xs font-semibold">新增金融工具</span>
+      </a>
+      <a href="<%= BASE_PATH %>/campaigns/new" data-reveal class="card !p-4 flex flex-col items-center gap-1.5 text-center hover:-translate-y-0.5">
+        <span class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1" stroke-linecap="round"/></svg>
+        </span>
+        <span class="text-xs font-semibold">AI 登錄活動</span>
+      </a>
+      <a href="<%= BASE_PATH %>/campaigns" data-reveal class="card !p-4 flex flex-col items-center gap-1.5 text-center hover:-translate-y-0.5">
+        <span class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l4 4L21 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="text-xs font-semibold">瀏覽活動</span>
+      </a>
     </section>
 
     <!-- Recent campaigns -->
@@ -52,8 +89,8 @@
         </div>
       <% } else { %>
         <div class="space-y-2.5">
-          <% campaigns.slice(0, 4).forEach(function(c){ %>
-            <div class="card !p-4 flex items-start justify-between gap-3">
+          <% campaigns.slice(0, 4).forEach(function(c, i){ %>
+            <div data-reveal class="card !p-4 flex items-start justify-between gap-3">
               <div class="min-w-0">
                 <p class="font-semibold truncate"><%= c.campaign_name %></p>
                 <p class="text-xs text-slate-500 mt-0.5 truncate"><%= c.card_or_account_name %> · <%= c.bank_or_provider_name %></p>
@@ -62,6 +99,9 @@
                   <% if (c.end_date) { %><span class="chip-slate">至 <%= c.end_date %></span><% } %>
                   <% if (c.requires_registration) { %><span class="chip-amber">需登錄</span><% } %>
                 </div>
+              </div>
+              <div class="w-10 h-10 rounded-2xl bg-brand-50 text-brand-700 flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7L9 18l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </div>
             </div>
           <% }) %>

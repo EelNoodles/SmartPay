@@ -4,13 +4,19 @@
   <%- include('../partials/flash') %>
 
   <main class="container-app py-5 space-y-5">
-    <div class="flex items-center justify-between">
-      <h1 class="text-2xl font-bold">回饋活動</h1>
-      <a href="<%= BASE_PATH %>/campaigns/new" class="btn-primary !py-2 !px-4 text-xs">+ AI 登錄</a>
+    <div class="flex items-center justify-between animate-fade-up">
+      <div>
+        <h1 class="text-2xl font-extrabold">回饋活動</h1>
+        <p class="text-xs text-slate-500 mt-0.5">AI 替你把冗長規則拆成精準條件</p>
+      </div>
+      <a href="<%= BASE_PATH %>/campaigns/new" class="btn-primary !py-2 !px-4 text-xs">✨ AI 登錄</a>
     </div>
 
     <% if (campaigns.length === 0) { %>
-      <div class="card text-center py-8">
+      <div class="card text-center py-10 animate-fade-up">
+        <div class="mx-auto w-14 h-14 rounded-3xl bg-brand-50 text-brand-600 flex items-center justify-center mb-4">
+          <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 5h-4V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v2H4a1 1 0 0 0-1 1v3a5 5 0 0 0 5 5h.5a4 4 0 0 0 3.5 2v3H9v2h6v-2h-3v-3a4 4 0 0 0 3.5-2H16a5 5 0 0 0 5-5V6a1 1 0 0 0-1-1z"/></svg>
+        </div>
         <p class="text-sm text-slate-500">還沒有登錄任何活動。</p>
         <a href="<%= BASE_PATH %>/campaigns/new" class="btn-primary mt-4 inline-flex">貼上活動規則讓 AI 幫你登錄</a>
       </div>
@@ -18,7 +24,7 @@
       <div class="space-y-3">
         <% campaigns.forEach(function(c){
              var capMeta = REWARD_CAP_PERIOD_META[c.reward_cap_period]; %>
-          <div class="card !p-4">
+          <div data-reveal class="card !p-4">
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0">
                 <p class="font-semibold truncate"><%= c.campaign_name %></p>

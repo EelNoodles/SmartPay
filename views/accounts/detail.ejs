@@ -8,7 +8,7 @@
   <main class="container-app py-5 space-y-5">
     <a href="<%= BASE_PATH %>/accounts" class="text-sm text-slate-500 hover:text-brand-600">← 返回清單</a>
 
-    <div class="payment-card max-w-lg">
+    <div class="payment-card max-w-lg animate-fade-up">
       <% if (account.image_path) { %>
         <img src="<%= BASE_PATH %><%= account.image_path %>" alt="<%= account.card_or_account_name %>" />
       <% } else { %>
