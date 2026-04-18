@@ -88,6 +88,49 @@ async function create(data) {
   return res.insertId;
 }
 
+async function update(id, userId, data) {
+  const [res] = await pool.query(
+    `UPDATE reward_campaigns rc
+       JOIN financial_accounts fa ON fa.id = rc.financial_account_id
+        SET rc.financial_account_id = ?,
+            rc.campaign_name        = ?,
+            rc.description          = ?,
+            rc.start_date           = ?,
+            rc.end_date             = ?,
+            rc.reward_rate          = ?,
+            rc.reward_cap_amount    = ?,
+            rc.reward_cap_period    = ?,
+            rc.min_spend_amount     = ?,
+            rc.applicable_days      = ?,
+            rc.target_merchants     = ?,
+            rc.requires_registration = ?,
+            rc.is_quota_limited      = ?,
+            rc.requires_plan_switch  = ?,
+            rc.required_plan_name    = ?
+      WHERE rc.id = ? AND fa.user_id = ?`,
+    [
+      data.financial_account_id,
+      data.campaign_name,
+      data.description || '',
+      data.start_date || null,
+      data.end_date || null,
+      data.reward_rate ?? 0,
+      data.reward_cap_amount ?? null,
+      data.reward_cap_period ?? 0,
+      data.min_spend_amount ?? null,
+      JSON.stringify(data.applicable_days || []),
+      JSON.stringify(data.target_merchants || []),
+      data.requires_registration ? 1 : 0,
+      data.is_quota_limited ? 1 : 0,
+      data.requires_plan_switch ? 1 : 0,
+      data.required_plan_name || null,
+      id,
+      userId
+    ]
+  );
+  return res.affectedRows > 0;
+}
+
 async function remove(id, userId) {
   const [res] = await pool.query(
     `DELETE rc FROM reward_campaigns rc
@@ -120,4 +163,4 @@ async function listActiveForPrompt(userId, today) {
   return rows.map(normalizeRow);
 }
 
-module.exports = { listByUser, listByAccount, findById, create, remove, listActiveForPrompt };
+module.exports = { listByUser, listByAccount, findById, create, update, remove, listActiveForPrompt };
