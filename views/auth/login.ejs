@@ -1,16 +1,21 @@
 <%- include('../partials/head') %>
-<body class="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-100">
-  <main class="min-h-screen flex items-center justify-center px-5 py-10">
+<body class="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-100 relative overflow-hidden">
+  <!-- Decorative background -->
+  <div class="hero-blob bg-brand-400/40 w-80 h-80 -top-24 -left-24 animate-blob"></div>
+  <div class="hero-blob bg-indigo-400/40 w-96 h-96 -bottom-24 -right-24 animate-blob animation-delay-300"></div>
+  <div class="hero-blob bg-fuchsia-300/30 w-56 h-56 top-1/3 right-1/4 animate-blob animation-delay-150"></div>
+
+  <main class="relative min-h-screen flex items-center justify-center px-5 py-10">
     <div class="w-full max-w-sm">
-      <div class="flex flex-col items-center mb-8">
-        <div class="w-14 h-14 rounded-3xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white font-black text-2xl shadow-card">S</div>
-        <h1 class="mt-4 text-2xl font-bold">SmartPay</h1>
+      <div class="flex flex-col items-center mb-8 animate-fade-up">
+        <div class="w-14 h-14 rounded-3xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white font-black text-2xl shadow-glow">S</div>
+        <h1 class="mt-4 text-2xl font-extrabold">SmartPay</h1>
         <p class="text-sm text-slate-500 mt-1">你的智能支付管家</p>
       </div>
 
       <%- include('../partials/flash') %>
 
-      <form action="<%= BASE_PATH %>/auth/login" method="POST" class="card space-y-4">
+      <form action="<%= BASE_PATH %>/auth/login" method="POST" class="card-glass space-y-4 animate-fade-up animation-delay-75">
         <div>
           <label class="label" for="email">電子郵件</label>
           <input id="email" name="email" type="email" required autocomplete="email"
@@ -24,7 +29,7 @@
         <button type="submit" class="btn-primary w-full">登入</button>
       </form>
 
-      <p class="text-center text-sm text-slate-500 mt-6">
+      <p class="text-center text-sm text-slate-500 mt-6 animate-fade-up animation-delay-150">
         還沒有帳號？
         <a href="<%= BASE_PATH %>/auth/register" class="font-semibold text-brand-600 hover:text-brand-700">立即註冊</a>
       </p>

@@ -5,70 +5,108 @@
 
   <main class="container-app py-5 space-y-6">
     <!-- Input card -->
-    <section class="card-glass bg-gradient-to-br from-brand-600 to-brand-800 text-white !p-6">
-      <p class="text-[11px] uppercase tracking-widest opacity-80">AI Recommender</p>
-      <h1 class="text-2xl sm:text-3xl font-bold mt-1 text-white">最佳支付試算</h1>
-      <form action="<%= BASE_PATH %>/recommender" method="POST" class="mt-5 space-y-3">
-        <div>
-          <label class="label text-white/80" for="scenario">消費情境 / 店家</label>
-          <input id="scenario" name="scenario" required class="field !bg-white/95 text-slate-900"
-                 value="<%= query.scenario %>" placeholder="例：全聯 買菜、星巴克、蝦皮購物" />
-        </div>
-        <div>
-          <label class="label text-white/80" for="amount">預計消費金額 (NT$)</label>
-          <input id="amount" name="amount" type="number" min="1" required inputmode="numeric" class="field !bg-white/95 text-slate-900"
-                 value="<%= query.amount %>" placeholder="1500" />
-        </div>
-        <button class="btn w-full bg-white text-brand-700 hover:bg-white/90 font-bold">試算最佳支付</button>
-      </form>
+    <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-brand-900 text-white p-6 shadow-glow animate-fade-up">
+      <div class="hero-blob bg-sky-400/60 w-56 h-56 -top-10 -left-16 animate-blob"></div>
+      <div class="hero-blob bg-indigo-400/60 w-72 h-72 -bottom-24 -right-16 animate-blob animation-delay-300"></div>
+
+      <div class="relative">
+        <p class="chip bg-white/20 text-white border border-white/25 inline-flex">✨ AI Recommender</p>
+        <h1 class="text-2xl sm:text-3xl font-extrabold mt-2 text-white">最佳支付試算</h1>
+        <form action="<%= BASE_PATH %>/recommender" method="POST" class="mt-5 space-y-3" data-loading>
+          <div>
+            <label class="label text-white/80" for="scenario">消費情境 / 店家</label>
+            <input id="scenario" name="scenario" required class="field !bg-white/95 text-slate-900"
+                   value="<%= query.scenario %>" placeholder="例：全聯 買菜、星巴克、蝦皮購物" />
+          </div>
+          <div>
+            <label class="label text-white/80" for="amount">預計消費金額 (NT$)</label>
+            <input id="amount" name="amount" type="number" min="1" required inputmode="numeric" class="field !bg-white/95 text-slate-900"
+                   value="<%= query.amount %>" placeholder="1500" />
+          </div>
+          <button class="btn w-full bg-white text-brand-700 hover:bg-white/95 font-bold">
+            <span class="spinner hidden"></span>
+            <span class="btn-text">試算最佳支付</span>
+          </button>
+        </form>
+      </div>
     </section>
 
     <% if (accounts.length === 0) { %>
-      <div class="card text-center py-6">
+      <div class="card text-center py-6 animate-fade-up">
         <p class="text-sm text-slate-500">你還沒有任何金融工具。</p>
         <a href="<%= BASE_PATH %>/accounts/new" class="btn-primary mt-4 inline-flex">先新增一張卡</a>
       </div>
     <% } %>
 
     <% if (result && result.error) { %>
-      <div class="card bg-rose-50 border border-rose-200 text-rose-700 text-sm"><%= result.error %></div>
+      <div class="card bg-rose-50 border border-rose-200 text-rose-700 text-sm animate-fade-up"><%= result.error %></div>
     <% } %>
 
-    <% if (result && result.recommendations && result.recommendations.length) { %>
+    <% if (result && result.recommendations && result.recommendations.length) {
+         var maxReward = 0;
+         result.recommendations.forEach(function(r){ if (Number(r.estimated_reward||0) > maxReward) maxReward = Number(r.estimated_reward||0); });
+         if (maxReward === 0) maxReward = 1;
+    %>
       <section>
         <div class="flex items-center justify-between mb-3">
-          <h2 class="font-bold text-lg">🏆 Leaderboard · 前 <%= result.recommendations.length %> 名</h2>
-          <span class="text-[11px] text-slate-500">
-            <% if (result.context && result.context.usedCache) { %>🟢 context cache<% } else { %>🔵 direct<% } %>
+          <h2 class="font-bold text-lg flex items-center gap-2">
+            <span class="text-xl">🏆</span> Leaderboard
+            <span class="chip-brand"><%= result.recommendations.length %> 名</span>
+          </h2>
+          <span class="text-[11px] text-slate-500 inline-flex items-center gap-1">
+            <% if (result.context && result.context.usedCache) { %>
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse-soft"></span> context cache
+            <% } else { %>
+              <span class="w-2 h-2 rounded-full bg-brand-500"></span> direct
+            <% } %>
           </span>
         </div>
+
         <div class="space-y-3">
-          <% result.recommendations.forEach(function(r){
-               var meta = r.account ? ACCOUNT_TYPE_META[r.account.account_type] : null; %>
-            <article class="card !p-5">
+          <% result.recommendations.forEach(function(r, idx){
+               var meta = r.account ? ACCOUNT_TYPE_META[r.account.account_type] : null;
+               var reward = Number(r.estimated_reward || 0);
+               var rate   = Number(r.estimated_rate || 0);
+               var pct = Math.max(6, Math.round((reward / maxReward) * 100));
+               var isTop = r.rank === 1;
+          %>
+            <article data-reveal class="relative card !p-5 <%= isTop ? 'ring-2 ring-amber-300/70 bg-gradient-to-br from-amber-50/80 to-white' : '' %>">
+              <% if (isTop) { %>
+                <span class="absolute -top-2 -left-2 chip bg-gradient-to-r from-amber-400 to-amber-600 text-white shadow-card px-2.5 py-1 text-[11px]">
+                  👑 最推薦
+                </span>
+              <% } %>
+
               <div class="flex items-start gap-4">
                 <div class="rank-<%= r.rank %>"><%= r.rank %></div>
                 <div class="min-w-0 flex-1">
                   <p class="text-xs text-slate-500"><%= meta ? meta.label : '—' %></p>
-                  <p class="font-bold text-lg truncate"><%= r.payment_label %></p>
+                  <p class="font-extrabold text-lg truncate"><%= r.payment_label %></p>
                   <% if (r.account) { %>
                     <p class="text-xs text-slate-500 truncate"><%= r.account.bank_or_provider_name %> · •••• <%= r.account.last_four_digits || '----' %></p>
                   <% } %>
                 </div>
                 <div class="text-right">
                   <p class="text-[11px] text-slate-500">預估回饋</p>
-                  <p class="text-2xl font-black text-brand-700">
-                    $<%= Math.round(Number(r.estimated_reward) || 0) %>
+                  <p class="text-2xl font-black <%= isTop ? 'text-amber-700' : 'text-brand-700' %>">
+                    <span data-countup="<%= Math.round(reward) %>" data-countup-prefix="$" data-countup-duration="900">$0</span>
                   </p>
-                  <p class="text-[11px] text-slate-500"><%= Number(r.estimated_rate || 0).toFixed(2) %>%</p>
+                  <p class="text-[11px] text-slate-500"><%= rate.toFixed(2) %>%</p>
                 </div>
+              </div>
+
+              <!-- Reward bar -->
+              <div class="mt-4 h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                <div class="h-full <%= isTop ? 'bg-gradient-to-r from-amber-400 to-amber-600' : 'bg-gradient-to-r from-brand-400 to-brand-700' %> transition-all duration-700"
+                     style="width: <%= pct %>%"></div>
               </div>
 
               <% if ((r.warnings || []).length) { %>
                 <ul class="mt-4 space-y-1.5">
                   <% r.warnings.forEach(function(w){ %>
                     <li class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 flex items-start gap-2">
-                      <span>⚠️</span><span><%= w %></span>
+                      <svg class="w-4 h-4 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h0M10.3 3.9L1.8 18.1a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" stroke-linejoin="round"/></svg>
+                      <span><%= w %></span>
                     </li>
                   <% }) %>
                 </ul>
@@ -82,7 +120,7 @@
         </div>
       </section>
     <% } else if (result && !result.error) { %>
-      <div class="card text-center py-6 text-sm text-slate-500">
+      <div class="card text-center py-6 text-sm text-slate-500 animate-fade-up">
         沒有可用推薦。請新增金融工具或活動後再試。
       </div>
     <% } %>

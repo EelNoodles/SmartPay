@@ -4,28 +4,31 @@
   <%- include('../partials/flash') %>
 
   <main class="container-app py-5 space-y-6">
-    <div class="flex items-center justify-between">
-      <h1 class="text-2xl font-bold">金融工具</h1>
+    <div class="flex items-center justify-between animate-fade-up">
+      <div>
+        <h1 class="text-2xl font-extrabold">金融工具</h1>
+        <p class="text-xs text-slate-500 mt-0.5">管理你所有的銀行帳戶、信用卡與行動支付</p>
+      </div>
       <a href="<%= BASE_PATH %>/accounts/new" class="btn-primary !py-2 !px-4 text-xs">+ 新增</a>
     </div>
 
     <% Object.keys(grouped).forEach(function(typeId){
          var meta = ACCOUNT_TYPE_META[typeId];
          var list = grouped[typeId] || []; if (!meta) return; %>
-      <section>
+      <section data-reveal>
         <h2 class="text-sm font-semibold text-slate-600 mb-2 flex items-center gap-2">
-          <span class="w-6 h-6 rounded-lg flex items-center justify-center <%= meta.accent %> text-white text-xs"><%= meta.emoji %></span>
+          <span class="w-6 h-6 rounded-lg flex items-center justify-center <%= meta.accent %> text-white text-xs shadow-card"><%= meta.emoji %></span>
           <%= meta.label %> <span class="text-slate-400 font-normal">(<%= list.length %>)</span>
         </h2>
         <% if (list.length === 0) { %>
-          <div class="card text-sm text-slate-400 py-4 text-center">尚未新增</div>
+          <div class="card text-sm text-slate-400 py-4 text-center border border-dashed border-slate-200">尚未新增</div>
         <% } else { %>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <% list.forEach(function(a){ %>
-              <a href="<%= BASE_PATH %>/accounts/<%= a.id %>" class="block group">
+            <% list.forEach(function(a, idx){ %>
+              <a href="<%= BASE_PATH %>/accounts/<%= a.id %>" data-reveal class="block group">
                 <div class="payment-card bg-gradient-to-br from-slate-700 to-slate-900">
                   <% if (a.image_path) { %>
-                    <img src="<%= BASE_PATH %><%= a.image_path %>" alt="<%= a.card_or_account_name %>" class="object-cover" />
+                    <img src="<%= BASE_PATH %><%= a.image_path %>" alt="<%= a.card_or_account_name %>" class="object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
                   <% } else { %>
                     <div class="absolute inset-0 bg-gradient-to-br <%= meta.accent.replace('bg-', 'from-') %> to-slate-900"></div>
                   <% } %>

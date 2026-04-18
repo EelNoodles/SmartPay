@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -19,6 +19,13 @@
   input, select, textarea {
     @apply focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400;
   }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
 
 @layer components {
@@ -31,7 +38,7 @@
     min-height: 44px;
   }
   .btn-primary {
-    @apply btn bg-brand-600 text-white shadow-card hover:bg-brand-700;
+    @apply btn bg-brand-600 text-white shadow-card hover:bg-brand-700 hover:shadow-glow;
   }
   .btn-ghost {
     @apply btn bg-white/70 text-slate-700 border border-slate-200 hover:bg-white;
@@ -41,7 +48,7 @@
   }
 
   .field {
-    @apply w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-slate-900 placeholder-slate-400 shadow-sm;
+    @apply w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-slate-900 placeholder-slate-400 shadow-sm transition-all;
     min-height: 44px;
   }
   .label {
@@ -49,7 +56,10 @@
   }
 
   .card {
-    @apply bg-white rounded-3xl shadow-card p-5;
+    @apply bg-white rounded-3xl shadow-card p-5 transition-all duration-300;
+  }
+  .card:hover {
+    box-shadow: 0 12px 30px rgba(17,29,92,0.1);
   }
   .card-glass {
     @apply rounded-3xl border border-white/40 bg-white/60 backdrop-blur-xl shadow-glass p-5;
@@ -58,14 +68,17 @@
   .chip {
     @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold;
   }
-  .chip-amber { @apply chip bg-amber-100 text-amber-700; }
-  .chip-rose  { @apply chip bg-rose-100 text-rose-700; }
+  .chip-amber   { @apply chip bg-amber-100 text-amber-700; }
+  .chip-rose    { @apply chip bg-rose-100 text-rose-700; }
   .chip-emerald { @apply chip bg-emerald-100 text-emerald-700; }
-  .chip-slate { @apply chip bg-slate-100 text-slate-600; }
-  .chip-brand { @apply chip bg-brand-100 text-brand-700; }
+  .chip-slate   { @apply chip bg-slate-100 text-slate-600; }
+  .chip-brand   { @apply chip bg-brand-100 text-brand-700; }
 
   .payment-card {
-    @apply relative overflow-hidden rounded-3xl aspect-video shadow-card;
+    @apply relative overflow-hidden rounded-3xl aspect-video shadow-card transition-transform duration-300;
+  }
+  .payment-card:hover {
+    transform: translateY(-3px);
   }
   .payment-card img {
     @apply absolute inset-0 w-full h-full object-cover;
@@ -75,22 +88,74 @@
   }
 
   .nav-item {
-    @apply flex flex-col items-center justify-center gap-0.5 flex-1 py-2 text-[11px] font-medium text-slate-500;
+    @apply relative flex flex-col items-center justify-center gap-0.5 flex-1 py-2 text-[11px] font-medium text-slate-500 transition-colors;
     min-height: 56px;
   }
-  .nav-item.active {
-    @apply text-brand-600;
+  .nav-item.active { @apply text-brand-600; }
+  .nav-item.active::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 28px;
+    height: 3px;
+    border-radius: 9999px;
+    background: linear-gradient(90deg,#5f84ff,#1f38a8);
   }
-  .nav-icon {
-    @apply w-6 h-6;
-  }
+  .nav-icon { @apply w-6 h-6; }
 
   .rank-badge {
-    @apply inline-flex items-center justify-center w-10 h-10 rounded-2xl font-bold text-white shadow-card;
+    @apply relative inline-flex items-center justify-center w-11 h-11 rounded-2xl font-black text-white shadow-card overflow-hidden;
+  }
+  .rank-badge::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(100deg, transparent 0%, rgba(255,255,255,.45) 50%, transparent 100%);
+    mix-blend-mode: screen;
+    transform: translateX(-140%) skewX(-12deg);
   }
   .rank-1 { @apply rank-badge bg-gradient-to-br from-amber-400 to-amber-600; }
+  .rank-1::after { animation: shine 2.8s ease-in-out infinite; }
   .rank-2 { @apply rank-badge bg-gradient-to-br from-slate-300 to-slate-500; }
   .rank-3 { @apply rank-badge bg-gradient-to-br from-orange-300 to-orange-500; }
+
+  .stat-tile {
+    @apply card flex items-center justify-between !p-4 relative overflow-hidden;
+  }
+  .stat-tile::after {
+    content: '';
+    position: absolute;
+    inset: auto -30px -30px auto;
+    width: 110px; height: 110px;
+    border-radius: 9999px;
+    background: radial-gradient(closest-side, rgba(59,99,245,.12), transparent);
+    pointer-events: none;
+  }
+
+  .hero-blob {
+    @apply absolute rounded-full blur-3xl opacity-40 pointer-events-none;
+  }
+
+  /* Loading spinner overlay for forms */
+  .spinner {
+    @apply inline-block w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin;
+  }
+  .is-loading .btn-text { opacity: .55; }
+  .is-loading .spinner  { display: inline-block; }
+
+  /* Shimmer skeleton */
+  .skeleton {
+    background: linear-gradient(90deg,#eceef4 25%,#f6f7fb 37%,#eceef4 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.4s ease-in-out infinite;
+    border-radius: 12px;
+  }
+  @keyframes shimmer {
+    0%   { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+  }
 }
 
 /* Prevent iOS safe-area overlap for bottom nav */

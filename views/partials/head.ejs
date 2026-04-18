@@ -7,6 +7,16 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="SmartPay" />
+  <meta name="description" content="SmartPay 智能支付管家 — AI 幫你刷到最佳回饋" />
+
   <title><%= typeof title !== 'undefined' ? title : 'SmartPay 智能支付管家' %></title>
+
+  <link rel="icon" type="image/svg+xml" href="<%= asset('/public/favicon.svg') %>" />
+  <link rel="icon" type="image/svg+xml" sizes="any" href="<%= asset('/public/favicon.svg') %>" />
+  <link rel="apple-touch-icon" href="<%= asset('/public/icon-maskable.svg') %>" />
+  <link rel="mask-icon" href="<%= asset('/public/favicon.svg') %>" color="#2949d6" />
+  <link rel="manifest" href="<%= asset('/public/site.webmanifest') %>" />
+
   <link rel="stylesheet" href="<%= asset('/public/css/style.css') %>" />
 </head>

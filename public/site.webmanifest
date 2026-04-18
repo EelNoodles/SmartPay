@@ -1,0 +1,22 @@
+{
+  "name": "SmartPay 智能支付管家",
+  "short_name": "SmartPay",
+  "description": "AI 驅動的個人支付與回饋最佳化助手",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f7f8fb",
+  "theme_color": "#2949d6",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
