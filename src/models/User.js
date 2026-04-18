@@ -1,27 +1,27 @@
 const pool = require('../config/db');
 
-async function findByUsername(username) {
+async function findByEmail(email) {
   const [rows] = await pool.query(
-    'SELECT id, username, password_hash, display_name FROM users WHERE username = ? LIMIT 1',
-    [username]
+    'SELECT id, email, password_hash, display_name FROM users WHERE email = ? LIMIT 1',
+    [email]
   );
   return rows[0] || null;
 }
 
 async function findById(id) {
   const [rows] = await pool.query(
-    'SELECT id, username, display_name FROM users WHERE id = ? LIMIT 1',
+    'SELECT id, email, display_name FROM users WHERE id = ? LIMIT 1',
     [id]
   );
   return rows[0] || null;
 }
 
-async function create({ username, passwordHash, displayName }) {
+async function create({ email, passwordHash, displayName }) {
   const [res] = await pool.query(
-    'INSERT INTO users (username, password_hash, display_name) VALUES (?, ?, ?)',
-    [username, passwordHash, displayName || null]
+    'INSERT INTO users (email, password_hash, display_name) VALUES (?, ?, ?)',
+    [email, passwordHash, displayName || null]
   );
   return res.insertId;
 }
 
-module.exports = { findByUsername, findById, create };
+module.exports = { findByEmail, findById, create };
